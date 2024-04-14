@@ -1,6 +1,7 @@
 ﻿using CleanArch.Application;
 using CleanArch.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace CleanArch.Api.Controllers
 {
@@ -9,16 +10,24 @@ namespace CleanArch.Api.Controllers
     public class MasterController : ControllerBase
     {
         public readonly IMasterFieldService _masterService;
-        public MasterController(IMasterFieldService masterService)
+        private readonly IConfiguration _configuration;
+        IOptions<MyOptions> _options;
+        public MasterController(IMasterFieldService masterService,IConfiguration configuration, IOptions<MyOptions> options)
         {
             _masterService = masterService;
+            _configuration = configuration;
+            _options = options;
         }
     
         [HttpGet]
         [Route("bu")]
         public ActionResult<List<MasterDetailsModel>> BuDetails()
         {
-           var bu = _masterService.GetBu();
+            // Access app settings values
+            var settingValue = _configuration["MyKey"];
+            var value = _options.Value.Default;
+
+            var bu = _masterService.GetBu();
             return Ok(bu);
         }
         [HttpGet]
